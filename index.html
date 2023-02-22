@@ -6,7 +6,7 @@
         <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
         <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
         <link rel="stylesheet" href="css/leaflet-search.css">
         <link rel="stylesheet" href="css/filter.css">
@@ -15,8 +15,8 @@
         <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
         #map {
-            width: 952px;
-            height: 825px;
+            width: 1650px;
+            height: 891px;
         }
         </style>
         <title>DPHE FSTP Locations</title>
@@ -25,7 +25,7 @@
         <div id="map">
         </div>
         <script src="js/qgis2web_expressions.js"></script>
-        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
         <script src="js/leaflet.rotatedMarker.js"></script>
         <script src="js/leaflet.pattern.js"></script>
         <script src="js/leaflet-hash.js"></script>
@@ -45,14 +45,26 @@
         var highlightLayer;
         function highlightFeature(e) {
             highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
             highlightLayer.openPopup();
         }
         var map = L.map('map', {
             zoomControl:true, maxZoom:28, minZoom:1
-        }).fitBounds([[21.216605052394936,86.96945434351865],[26.394274277708945,92.94610776277524]]);
+        }).fitBounds([[22.19341148249149,86.96945434351865],[25.417467847612414,92.94610776277533]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
         var measureControl = new L.Control.Measure({
             position: 'topleft',
             primaryLengthUnit: 'meters',
@@ -84,6 +96,9 @@
         function pop_FSTPLocation_1(feature, layer) {
             layer.on({
                 mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
                     if (typeof layer.closePopup == 'function') {
                         layer.closePopup();
                     } else {
@@ -266,6 +281,9 @@
         function pop_Intrnational_boundary_2(feature, layer) {
             layer.on({
                 mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
                     if (typeof layer.closePopup == 'function') {
                         layer.closePopup();
                     } else {
@@ -344,7 +362,7 @@
             layer: layer_FSTPLocation_1,
             initial: false,
             hideMarkerOnCollapse: true,
-            propertyName: 'Status'}));
+            propertyName: 'City Name'}));
         document.getElementsByClassName('search-button')[0].className +=
          ' fa fa-binoculars';
         var mapDiv = document.getElementById('map');
@@ -366,7 +384,7 @@
         document.getElementById("all").appendChild(col1);
         document.getElementById("all").appendChild(col2);
         col1.appendChild(mapDiv)
-        var Filters = {"District": "str","Status": "str","Project": "str","Gender Vulnerability": "str","Business Model": "str","Delta Plan Hotspot": "str","Flood Risk": "str","Cyclone Risk": "str","Salinity Risk": "str","Flash Flood Risk": "str","Erosion Risk": "str","Landslide Risk": "str","Earthquake Risk": "str","Sea Level Rise Risk": "str"};
+        var Filters = {"Project": "str","Situation": "str","Status": "str","Sea Level Rise Risk": "str","Business Model": "str","Landslide Risk": "str","Cyclone Risk": "str","Gender Vulnerability": "str","Flood Risk": "str","Erosion Risk": "str","Flash Flood Risk": "str","Salinity Risk": "str","Earthquake Risk": "str","Delta Plan Hotspot": "str"};
         function filterFunc() {
           map.eachLayer(function(lyr){
           if ("options" in lyr && "dataVar" in lyr["options"]){
@@ -458,124 +476,6 @@
         }
             document.getElementById("menu").appendChild(
                 document.createElement("div"));
-            var div_District = document.createElement('div');
-            div_District.id = "div_District";
-            div_District.className= "filterselect";
-            document.getElementById("menu").appendChild(div_District);
-            sel_District = document.createElement('select');
-            sel_District.multiple = true;
-            sel_District.size = 10;
-            sel_District.id = "sel_District";
-            var District_options_str = "<option value='' unselected></option>";
-            sel_District.onchange = function(){filterFunc()};
-            District_options_str  += '<option value="Bagerhat">Bagerhat</option>';
-            District_options_str  += '<option value="Bandarban">Bandarban</option>';
-            District_options_str  += '<option value="Barguna">Barguna</option>';
-            District_options_str  += '<option value="Barisal">Barisal</option>';
-            District_options_str  += '<option value="Bogra">Bogra</option>';
-            District_options_str  += '<option value="Brahmanbaria">Brahmanbaria</option>';
-            District_options_str  += '<option value="Chapainawabganj">Chapainawabganj</option>';
-            District_options_str  += '<option value="Chattogram">Chattogram</option>';
-            District_options_str  += '<option value="Chittagong">Chittagong</option>';
-            District_options_str  += '<option value="Chuadanga">Chuadanga</option>';
-            District_options_str  += '<option value="Comilla">Comilla</option>';
-            District_options_str  += '<option value="Cox&apos;s Bazar">Cox&apos;s Bazar</option>';
-            District_options_str  += '<option value="Cumilla">Cumilla</option>';
-            District_options_str  += '<option value="Dhaka">Dhaka</option>';
-            District_options_str  += '<option value="Dinajpur">Dinajpur</option>';
-            District_options_str  += '<option value="Faridpur">Faridpur</option>';
-            District_options_str  += '<option value="Gaibandha">Gaibandha</option>';
-            District_options_str  += '<option value="Gazipur">Gazipur</option>';
-            District_options_str  += '<option value="Gopalganj">Gopalganj</option>';
-            District_options_str  += '<option value="Habiganj">Habiganj</option>';
-            District_options_str  += '<option value="Jamalpur">Jamalpur</option>';
-            District_options_str  += '<option value="Jashore">Jashore</option>';
-            District_options_str  += '<option value="Jessore">Jessore</option>';
-            District_options_str  += '<option value="Jhenaidah">Jhenaidah</option>';
-            District_options_str  += '<option value="Joypurhat">Joypurhat</option>';
-            District_options_str  += '<option value="Khagrachari">Khagrachari</option>';
-            District_options_str  += '<option value="Khulna">Khulna</option>';
-            District_options_str  += '<option value="Kurigram">Kurigram</option>';
-            District_options_str  += '<option value="Kushtia">Kushtia</option>';
-            District_options_str  += '<option value="Lakshmipur">Lakshmipur</option>';
-            District_options_str  += '<option value="Lalmonirhat">Lalmonirhat</option>';
-            District_options_str  += '<option value="Madaripur">Madaripur</option>';
-            District_options_str  += '<option value="Magura">Magura</option>';
-            District_options_str  += '<option value="Meherpur">Meherpur</option>';
-            District_options_str  += '<option value="Moulvibazar">Moulvibazar</option>';
-            District_options_str  += '<option value="Mymensing">Mymensing</option>';
-            District_options_str  += '<option value="Mymensingh">Mymensingh</option>';
-            District_options_str  += '<option value="Naogaon">Naogaon</option>';
-            District_options_str  += '<option value="Narayanganj">Narayanganj</option>';
-            District_options_str  += '<option value="Narsingdi">Narsingdi</option>';
-            District_options_str  += '<option value="Natore">Natore</option>';
-            District_options_str  += '<option value="Netrokona">Netrokona</option>';
-            District_options_str  += '<option value="Nilphamari">Nilphamari</option>';
-            District_options_str  += '<option value="Noakhali">Noakhali</option>';
-            District_options_str  += '<option value="Pabna">Pabna</option>';
-            District_options_str  += '<option value="Panchagarh">Panchagarh</option>';
-            District_options_str  += '<option value="Patuakhali">Patuakhali</option>';
-            District_options_str  += '<option value="Rajbari">Rajbari</option>';
-            District_options_str  += '<option value="Rajshahi">Rajshahi</option>';
-            District_options_str  += '<option value="Rangamati">Rangamati</option>';
-            District_options_str  += '<option value="Rangpur">Rangpur</option>';
-            District_options_str  += '<option value="Shariatpur">Shariatpur</option>';
-            District_options_str  += '<option value="Sirajganj">Sirajganj</option>';
-            District_options_str  += '<option value="Sunamganj">Sunamganj</option>';
-            District_options_str  += '<option value="Sylhet">Sylhet</option>';
-            District_options_str  += '<option value="Tangail">Tangail</option>';
-            sel_District.innerHTML = District_options_str;
-            div_District.appendChild(sel_District);
-            var lab_District = document.createElement('div');
-            lab_District.innerHTML = 'District';
-            lab_District.className = 'filterlabel';
-            div_District.appendChild(lab_District);
-            var reset_District = document.createElement('div');
-            reset_District.innerHTML = 'clear filter';
-            reset_District.className = 'filterlabel';
-            reset_District.onclick = function() {
-                var options = document.getElementById("sel_District").options;
-                for (var i=0; i < options.length; i++) {
-                    options[i].selected = false;
-                }
-                filterFunc();
-            };
-            div_District.appendChild(reset_District);
-            document.getElementById("menu").appendChild(
-                document.createElement("div"));
-            var div_Status = document.createElement('div');
-            div_Status.id = "div_Status";
-            div_Status.className= "filterselect";
-            document.getElementById("menu").appendChild(div_Status);
-            sel_Status = document.createElement('select');
-            sel_Status.multiple = true;
-            sel_Status.size = 4;
-            sel_Status.id = "sel_Status";
-            var Status_options_str = "<option value='' unselected></option>";
-            sel_Status.onchange = function(){filterFunc()};
-            Status_options_str  += '<option value="Construction completed">Construction completed</option>';
-            Status_options_str  += '<option value="Construction ongoing">Construction ongoing</option>';
-            Status_options_str  += '<option value="FSTP in operation">FSTP in operation</option>';
-            Status_options_str  += '<option value="Yet to start construction">Yet to start construction</option>';
-            sel_Status.innerHTML = Status_options_str;
-            div_Status.appendChild(sel_Status);
-            var lab_Status = document.createElement('div');
-            lab_Status.innerHTML = 'Status';
-            lab_Status.className = 'filterlabel';
-            div_Status.appendChild(lab_Status);
-            var reset_Status = document.createElement('div');
-            reset_Status.innerHTML = 'clear filter';
-            reset_Status.className = 'filterlabel';
-            reset_Status.onclick = function() {
-                var options = document.getElementById("sel_Status").options;
-                for (var i=0; i < options.length; i++) {
-                    options[i].selected = false;
-                }
-                filterFunc();
-            };
-            div_Status.appendChild(reset_Status);
-            document.getElementById("menu").appendChild(
-                document.createElement("div"));
             var div_Project = document.createElement('div');
             div_Project.id = "div_Project";
             div_Project.className= "filterselect";
@@ -618,39 +518,119 @@
             div_Project.appendChild(reset_Project);
             document.getElementById("menu").appendChild(
                 document.createElement("div"));
-            var div_GenderVulnerability = document.createElement('div');
-            div_GenderVulnerability.id = "div_GenderVulnerability";
-            div_GenderVulnerability.className= "filterselect";
-            document.getElementById("menu").appendChild(div_GenderVulnerability);
-            sel_GenderVulnerability = document.createElement('select');
-            sel_GenderVulnerability.multiple = true;
-            sel_GenderVulnerability.size = 6;
-            sel_GenderVulnerability.id = "sel_GenderVulnerability";
-            var GenderVulnerability_options_str = "<option value='' unselected></option>";
-            sel_GenderVulnerability.onchange = function(){filterFunc()};
-            GenderVulnerability_options_str  += '<option value="High">High</option>';
-            GenderVulnerability_options_str  += '<option value="HighGha">HighGha</option>';
-            GenderVulnerability_options_str  += '<option value="Low">Low</option>';
-            GenderVulnerability_options_str  += '<option value="Moderate">Moderate</option>';
-            GenderVulnerability_options_str  += '<option value="Very High">Very High</option>';
-            GenderVulnerability_options_str  += '<option value="Very Low">Very Low</option>';
-            sel_GenderVulnerability.innerHTML = GenderVulnerability_options_str;
-            div_GenderVulnerability.appendChild(sel_GenderVulnerability);
-            var lab_GenderVulnerability = document.createElement('div');
-            lab_GenderVulnerability.innerHTML = 'Gender Vulnerability';
-            lab_GenderVulnerability.className = 'filterlabel';
-            div_GenderVulnerability.appendChild(lab_GenderVulnerability);
-            var reset_GenderVulnerability = document.createElement('div');
-            reset_GenderVulnerability.innerHTML = 'clear filter';
-            reset_GenderVulnerability.className = 'filterlabel';
-            reset_GenderVulnerability.onclick = function() {
-                var options = document.getElementById("sel_GenderVulnerability").options;
+            var div_Situation = document.createElement('div');
+            div_Situation.id = "div_Situation";
+            div_Situation.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Situation);
+            sel_Situation = document.createElement('select');
+            sel_Situation.multiple = true;
+            sel_Situation.size = 10;
+            sel_Situation.id = "sel_Situation";
+            var Situation_options_str = "<option value='' unselected></option>";
+            sel_Situation.onchange = function(){filterFunc()};
+            Situation_options_str  += '<option value="NULL">NULL</option>';
+            Situation_options_str  += '<option value="1% safely managed">1% safely managed</option>';
+            Situation_options_str  += '<option value="12% safely managed">12% safely managed</option>';
+            Situation_options_str  += '<option value="13% safely managed">13% safely managed</option>';
+            Situation_options_str  += '<option value="14% safely managed">14% safely managed</option>';
+            Situation_options_str  += '<option value="15% safely managed">15% safely managed</option>';
+            Situation_options_str  += '<option value="16% safely managed">16% safely managed</option>';
+            Situation_options_str  += '<option value="17% safely managed">17% safely managed</option>';
+            Situation_options_str  += '<option value="18% safely managed">18% safely managed</option>';
+            Situation_options_str  += '<option value="19% safely managed">19% safely managed</option>';
+            Situation_options_str  += '<option value="2% safely managed">2% safely managed</option>';
+            Situation_options_str  += '<option value="22% safely managed">22% safely managed</option>';
+            Situation_options_str  += '<option value="23% safely managed">23% safely managed</option>';
+            Situation_options_str  += '<option value="29% safely managed">29% safely managed</option>';
+            Situation_options_str  += '<option value="30% safely managed">30% safely managed</option>';
+            Situation_options_str  += '<option value="33% safely managed">33% safely managed</option>';
+            Situation_options_str  += '<option value="43% safely managed">43% safely managed</option>';
+            Situation_options_str  += '<option value="9% safely managed">9% safely managed</option>';
+            Situation_options_str  += '<option value="No SFD Available">No SFD Available</option>';
+            sel_Situation.innerHTML = Situation_options_str;
+            div_Situation.appendChild(sel_Situation);
+            var lab_Situation = document.createElement('div');
+            lab_Situation.innerHTML = 'Situation';
+            lab_Situation.className = 'filterlabel';
+            div_Situation.appendChild(lab_Situation);
+            var reset_Situation = document.createElement('div');
+            reset_Situation.innerHTML = 'clear filter';
+            reset_Situation.className = 'filterlabel';
+            reset_Situation.onclick = function() {
+                var options = document.getElementById("sel_Situation").options;
                 for (var i=0; i < options.length; i++) {
                     options[i].selected = false;
                 }
                 filterFunc();
             };
-            div_GenderVulnerability.appendChild(reset_GenderVulnerability);
+            div_Situation.appendChild(reset_Situation);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Status = document.createElement('div');
+            div_Status.id = "div_Status";
+            div_Status.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Status);
+            sel_Status = document.createElement('select');
+            sel_Status.multiple = true;
+            sel_Status.size = 4;
+            sel_Status.id = "sel_Status";
+            var Status_options_str = "<option value='' unselected></option>";
+            sel_Status.onchange = function(){filterFunc()};
+            Status_options_str  += '<option value="Construction completed">Construction completed</option>';
+            Status_options_str  += '<option value="Construction ongoing">Construction ongoing</option>';
+            Status_options_str  += '<option value="FSTP in operation">FSTP in operation</option>';
+            Status_options_str  += '<option value="Yet to start construction">Yet to start construction</option>';
+            sel_Status.innerHTML = Status_options_str;
+            div_Status.appendChild(sel_Status);
+            var lab_Status = document.createElement('div');
+            lab_Status.innerHTML = 'Status';
+            lab_Status.className = 'filterlabel';
+            div_Status.appendChild(lab_Status);
+            var reset_Status = document.createElement('div');
+            reset_Status.innerHTML = 'clear filter';
+            reset_Status.className = 'filterlabel';
+            reset_Status.onclick = function() {
+                var options = document.getElementById("sel_Status").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Status.appendChild(reset_Status);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_SeaLevelRiseRisk = document.createElement('div');
+            div_SeaLevelRiseRisk.id = "div_SeaLevelRiseRisk";
+            div_SeaLevelRiseRisk.className= "filterselect";
+            document.getElementById("menu").appendChild(div_SeaLevelRiseRisk);
+            sel_SeaLevelRiseRisk = document.createElement('select');
+            sel_SeaLevelRiseRisk.multiple = true;
+            sel_SeaLevelRiseRisk.size = 5;
+            sel_SeaLevelRiseRisk.id = "sel_SeaLevelRiseRisk";
+            var SeaLevelRiseRisk_options_str = "<option value='' unselected></option>";
+            sel_SeaLevelRiseRisk.onchange = function(){filterFunc()};
+            SeaLevelRiseRisk_options_str  += '<option value="High">High</option>';
+            SeaLevelRiseRisk_options_str  += '<option value="Low">Low</option>';
+            SeaLevelRiseRisk_options_str  += '<option value="Moderate">Moderate</option>';
+            SeaLevelRiseRisk_options_str  += '<option value="Very High">Very High</option>';
+            SeaLevelRiseRisk_options_str  += '<option value="Very Low">Very Low</option>';
+            sel_SeaLevelRiseRisk.innerHTML = SeaLevelRiseRisk_options_str;
+            div_SeaLevelRiseRisk.appendChild(sel_SeaLevelRiseRisk);
+            var lab_SeaLevelRiseRisk = document.createElement('div');
+            lab_SeaLevelRiseRisk.innerHTML = 'Sea Level Rise Risk';
+            lab_SeaLevelRiseRisk.className = 'filterlabel';
+            div_SeaLevelRiseRisk.appendChild(lab_SeaLevelRiseRisk);
+            var reset_SeaLevelRiseRisk = document.createElement('div');
+            reset_SeaLevelRiseRisk.innerHTML = 'clear filter';
+            reset_SeaLevelRiseRisk.className = 'filterlabel';
+            reset_SeaLevelRiseRisk.onclick = function() {
+                var options = document.getElementById("sel_SeaLevelRiseRisk").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_SeaLevelRiseRisk.appendChild(reset_SeaLevelRiseRisk);
             document.getElementById("menu").appendChild(
                 document.createElement("div"));
             var div_BusinessModel = document.createElement('div');
@@ -688,6 +668,279 @@
                 filterFunc();
             };
             div_BusinessModel.appendChild(reset_BusinessModel);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_LandslideRisk = document.createElement('div');
+            div_LandslideRisk.id = "div_LandslideRisk";
+            div_LandslideRisk.className= "filterselect";
+            document.getElementById("menu").appendChild(div_LandslideRisk);
+            sel_LandslideRisk = document.createElement('select');
+            sel_LandslideRisk.multiple = true;
+            sel_LandslideRisk.size = 5;
+            sel_LandslideRisk.id = "sel_LandslideRisk";
+            var LandslideRisk_options_str = "<option value='' unselected></option>";
+            sel_LandslideRisk.onchange = function(){filterFunc()};
+            LandslideRisk_options_str  += '<option value="High">High</option>';
+            LandslideRisk_options_str  += '<option value="Low">Low</option>';
+            LandslideRisk_options_str  += '<option value="Moderate">Moderate</option>';
+            LandslideRisk_options_str  += '<option value="Very High">Very High</option>';
+            LandslideRisk_options_str  += '<option value="Very Low">Very Low</option>';
+            sel_LandslideRisk.innerHTML = LandslideRisk_options_str;
+            div_LandslideRisk.appendChild(sel_LandslideRisk);
+            var lab_LandslideRisk = document.createElement('div');
+            lab_LandslideRisk.innerHTML = 'Landslide Risk';
+            lab_LandslideRisk.className = 'filterlabel';
+            div_LandslideRisk.appendChild(lab_LandslideRisk);
+            var reset_LandslideRisk = document.createElement('div');
+            reset_LandslideRisk.innerHTML = 'clear filter';
+            reset_LandslideRisk.className = 'filterlabel';
+            reset_LandslideRisk.onclick = function() {
+                var options = document.getElementById("sel_LandslideRisk").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_LandslideRisk.appendChild(reset_LandslideRisk);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_CycloneRisk = document.createElement('div');
+            div_CycloneRisk.id = "div_CycloneRisk";
+            div_CycloneRisk.className= "filterselect";
+            document.getElementById("menu").appendChild(div_CycloneRisk);
+            sel_CycloneRisk = document.createElement('select');
+            sel_CycloneRisk.multiple = true;
+            sel_CycloneRisk.size = 5;
+            sel_CycloneRisk.id = "sel_CycloneRisk";
+            var CycloneRisk_options_str = "<option value='' unselected></option>";
+            sel_CycloneRisk.onchange = function(){filterFunc()};
+            CycloneRisk_options_str  += '<option value="High">High</option>';
+            CycloneRisk_options_str  += '<option value="Low">Low</option>';
+            CycloneRisk_options_str  += '<option value="Moderate">Moderate</option>';
+            CycloneRisk_options_str  += '<option value="Very High">Very High</option>';
+            CycloneRisk_options_str  += '<option value="Very Low">Very Low</option>';
+            sel_CycloneRisk.innerHTML = CycloneRisk_options_str;
+            div_CycloneRisk.appendChild(sel_CycloneRisk);
+            var lab_CycloneRisk = document.createElement('div');
+            lab_CycloneRisk.innerHTML = 'Cyclone Risk';
+            lab_CycloneRisk.className = 'filterlabel';
+            div_CycloneRisk.appendChild(lab_CycloneRisk);
+            var reset_CycloneRisk = document.createElement('div');
+            reset_CycloneRisk.innerHTML = 'clear filter';
+            reset_CycloneRisk.className = 'filterlabel';
+            reset_CycloneRisk.onclick = function() {
+                var options = document.getElementById("sel_CycloneRisk").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_CycloneRisk.appendChild(reset_CycloneRisk);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_GenderVulnerability = document.createElement('div');
+            div_GenderVulnerability.id = "div_GenderVulnerability";
+            div_GenderVulnerability.className= "filterselect";
+            document.getElementById("menu").appendChild(div_GenderVulnerability);
+            sel_GenderVulnerability = document.createElement('select');
+            sel_GenderVulnerability.multiple = true;
+            sel_GenderVulnerability.size = 6;
+            sel_GenderVulnerability.id = "sel_GenderVulnerability";
+            var GenderVulnerability_options_str = "<option value='' unselected></option>";
+            sel_GenderVulnerability.onchange = function(){filterFunc()};
+            GenderVulnerability_options_str  += '<option value="High">High</option>';
+            GenderVulnerability_options_str  += '<option value="HighGha">HighGha</option>';
+            GenderVulnerability_options_str  += '<option value="Low">Low</option>';
+            GenderVulnerability_options_str  += '<option value="Moderate">Moderate</option>';
+            GenderVulnerability_options_str  += '<option value="Very High">Very High</option>';
+            GenderVulnerability_options_str  += '<option value="Very Low">Very Low</option>';
+            sel_GenderVulnerability.innerHTML = GenderVulnerability_options_str;
+            div_GenderVulnerability.appendChild(sel_GenderVulnerability);
+            var lab_GenderVulnerability = document.createElement('div');
+            lab_GenderVulnerability.innerHTML = 'Gender Vulnerability';
+            lab_GenderVulnerability.className = 'filterlabel';
+            div_GenderVulnerability.appendChild(lab_GenderVulnerability);
+            var reset_GenderVulnerability = document.createElement('div');
+            reset_GenderVulnerability.innerHTML = 'clear filter';
+            reset_GenderVulnerability.className = 'filterlabel';
+            reset_GenderVulnerability.onclick = function() {
+                var options = document.getElementById("sel_GenderVulnerability").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_GenderVulnerability.appendChild(reset_GenderVulnerability);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_FloodRisk = document.createElement('div');
+            div_FloodRisk.id = "div_FloodRisk";
+            div_FloodRisk.className= "filterselect";
+            document.getElementById("menu").appendChild(div_FloodRisk);
+            sel_FloodRisk = document.createElement('select');
+            sel_FloodRisk.multiple = true;
+            sel_FloodRisk.size = 5;
+            sel_FloodRisk.id = "sel_FloodRisk";
+            var FloodRisk_options_str = "<option value='' unselected></option>";
+            sel_FloodRisk.onchange = function(){filterFunc()};
+            FloodRisk_options_str  += '<option value="High">High</option>';
+            FloodRisk_options_str  += '<option value="Low">Low</option>';
+            FloodRisk_options_str  += '<option value="Moderate">Moderate</option>';
+            FloodRisk_options_str  += '<option value="Very High">Very High</option>';
+            FloodRisk_options_str  += '<option value="Very Low">Very Low</option>';
+            sel_FloodRisk.innerHTML = FloodRisk_options_str;
+            div_FloodRisk.appendChild(sel_FloodRisk);
+            var lab_FloodRisk = document.createElement('div');
+            lab_FloodRisk.innerHTML = 'Flood Risk';
+            lab_FloodRisk.className = 'filterlabel';
+            div_FloodRisk.appendChild(lab_FloodRisk);
+            var reset_FloodRisk = document.createElement('div');
+            reset_FloodRisk.innerHTML = 'clear filter';
+            reset_FloodRisk.className = 'filterlabel';
+            reset_FloodRisk.onclick = function() {
+                var options = document.getElementById("sel_FloodRisk").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_FloodRisk.appendChild(reset_FloodRisk);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_ErosionRisk = document.createElement('div');
+            div_ErosionRisk.id = "div_ErosionRisk";
+            div_ErosionRisk.className= "filterselect";
+            document.getElementById("menu").appendChild(div_ErosionRisk);
+            sel_ErosionRisk = document.createElement('select');
+            sel_ErosionRisk.multiple = true;
+            sel_ErosionRisk.size = 5;
+            sel_ErosionRisk.id = "sel_ErosionRisk";
+            var ErosionRisk_options_str = "<option value='' unselected></option>";
+            sel_ErosionRisk.onchange = function(){filterFunc()};
+            ErosionRisk_options_str  += '<option value="High">High</option>';
+            ErosionRisk_options_str  += '<option value="Low">Low</option>';
+            ErosionRisk_options_str  += '<option value="Moderate">Moderate</option>';
+            ErosionRisk_options_str  += '<option value="Very High">Very High</option>';
+            ErosionRisk_options_str  += '<option value="Very Low">Very Low</option>';
+            sel_ErosionRisk.innerHTML = ErosionRisk_options_str;
+            div_ErosionRisk.appendChild(sel_ErosionRisk);
+            var lab_ErosionRisk = document.createElement('div');
+            lab_ErosionRisk.innerHTML = 'Erosion Risk';
+            lab_ErosionRisk.className = 'filterlabel';
+            div_ErosionRisk.appendChild(lab_ErosionRisk);
+            var reset_ErosionRisk = document.createElement('div');
+            reset_ErosionRisk.innerHTML = 'clear filter';
+            reset_ErosionRisk.className = 'filterlabel';
+            reset_ErosionRisk.onclick = function() {
+                var options = document.getElementById("sel_ErosionRisk").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_ErosionRisk.appendChild(reset_ErosionRisk);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_FlashFloodRisk = document.createElement('div');
+            div_FlashFloodRisk.id = "div_FlashFloodRisk";
+            div_FlashFloodRisk.className= "filterselect";
+            document.getElementById("menu").appendChild(div_FlashFloodRisk);
+            sel_FlashFloodRisk = document.createElement('select');
+            sel_FlashFloodRisk.multiple = true;
+            sel_FlashFloodRisk.size = 5;
+            sel_FlashFloodRisk.id = "sel_FlashFloodRisk";
+            var FlashFloodRisk_options_str = "<option value='' unselected></option>";
+            sel_FlashFloodRisk.onchange = function(){filterFunc()};
+            FlashFloodRisk_options_str  += '<option value="High">High</option>';
+            FlashFloodRisk_options_str  += '<option value="Low">Low</option>';
+            FlashFloodRisk_options_str  += '<option value="Moderate">Moderate</option>';
+            FlashFloodRisk_options_str  += '<option value="Very High">Very High</option>';
+            FlashFloodRisk_options_str  += '<option value="Very Low">Very Low</option>';
+            sel_FlashFloodRisk.innerHTML = FlashFloodRisk_options_str;
+            div_FlashFloodRisk.appendChild(sel_FlashFloodRisk);
+            var lab_FlashFloodRisk = document.createElement('div');
+            lab_FlashFloodRisk.innerHTML = 'Flash Flood Risk';
+            lab_FlashFloodRisk.className = 'filterlabel';
+            div_FlashFloodRisk.appendChild(lab_FlashFloodRisk);
+            var reset_FlashFloodRisk = document.createElement('div');
+            reset_FlashFloodRisk.innerHTML = 'clear filter';
+            reset_FlashFloodRisk.className = 'filterlabel';
+            reset_FlashFloodRisk.onclick = function() {
+                var options = document.getElementById("sel_FlashFloodRisk").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_FlashFloodRisk.appendChild(reset_FlashFloodRisk);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_SalinityRisk = document.createElement('div');
+            div_SalinityRisk.id = "div_SalinityRisk";
+            div_SalinityRisk.className= "filterselect";
+            document.getElementById("menu").appendChild(div_SalinityRisk);
+            sel_SalinityRisk = document.createElement('select');
+            sel_SalinityRisk.multiple = true;
+            sel_SalinityRisk.size = 5;
+            sel_SalinityRisk.id = "sel_SalinityRisk";
+            var SalinityRisk_options_str = "<option value='' unselected></option>";
+            sel_SalinityRisk.onchange = function(){filterFunc()};
+            SalinityRisk_options_str  += '<option value="High">High</option>';
+            SalinityRisk_options_str  += '<option value="Low">Low</option>';
+            SalinityRisk_options_str  += '<option value="Moderate">Moderate</option>';
+            SalinityRisk_options_str  += '<option value="Very High">Very High</option>';
+            SalinityRisk_options_str  += '<option value="Very Low">Very Low</option>';
+            sel_SalinityRisk.innerHTML = SalinityRisk_options_str;
+            div_SalinityRisk.appendChild(sel_SalinityRisk);
+            var lab_SalinityRisk = document.createElement('div');
+            lab_SalinityRisk.innerHTML = 'Salinity Risk';
+            lab_SalinityRisk.className = 'filterlabel';
+            div_SalinityRisk.appendChild(lab_SalinityRisk);
+            var reset_SalinityRisk = document.createElement('div');
+            reset_SalinityRisk.innerHTML = 'clear filter';
+            reset_SalinityRisk.className = 'filterlabel';
+            reset_SalinityRisk.onclick = function() {
+                var options = document.getElementById("sel_SalinityRisk").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_SalinityRisk.appendChild(reset_SalinityRisk);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_EarthquakeRisk = document.createElement('div');
+            div_EarthquakeRisk.id = "div_EarthquakeRisk";
+            div_EarthquakeRisk.className= "filterselect";
+            document.getElementById("menu").appendChild(div_EarthquakeRisk);
+            sel_EarthquakeRisk = document.createElement('select');
+            sel_EarthquakeRisk.multiple = true;
+            sel_EarthquakeRisk.size = 5;
+            sel_EarthquakeRisk.id = "sel_EarthquakeRisk";
+            var EarthquakeRisk_options_str = "<option value='' unselected></option>";
+            sel_EarthquakeRisk.onchange = function(){filterFunc()};
+            EarthquakeRisk_options_str  += '<option value="High">High</option>';
+            EarthquakeRisk_options_str  += '<option value="Low">Low</option>';
+            EarthquakeRisk_options_str  += '<option value="Moderate">Moderate</option>';
+            EarthquakeRisk_options_str  += '<option value="Very High">Very High</option>';
+            EarthquakeRisk_options_str  += '<option value="Very Low">Very Low</option>';
+            sel_EarthquakeRisk.innerHTML = EarthquakeRisk_options_str;
+            div_EarthquakeRisk.appendChild(sel_EarthquakeRisk);
+            var lab_EarthquakeRisk = document.createElement('div');
+            lab_EarthquakeRisk.innerHTML = 'Earthquake Risk';
+            lab_EarthquakeRisk.className = 'filterlabel';
+            div_EarthquakeRisk.appendChild(lab_EarthquakeRisk);
+            var reset_EarthquakeRisk = document.createElement('div');
+            reset_EarthquakeRisk.innerHTML = 'clear filter';
+            reset_EarthquakeRisk.className = 'filterlabel';
+            reset_EarthquakeRisk.onclick = function() {
+                var options = document.getElementById("sel_EarthquakeRisk").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_EarthquakeRisk.appendChild(reset_EarthquakeRisk);
             document.getElementById("menu").appendChild(
                 document.createElement("div"));
             var div_DeltaPlanHotspot = document.createElement('div');
@@ -732,278 +985,6 @@
                 filterFunc();
             };
             div_DeltaPlanHotspot.appendChild(reset_DeltaPlanHotspot);
-            document.getElementById("menu").appendChild(
-                document.createElement("div"));
-            var div_FloodRisk = document.createElement('div');
-            div_FloodRisk.id = "div_FloodRisk";
-            div_FloodRisk.className= "filterselect";
-            document.getElementById("menu").appendChild(div_FloodRisk);
-            sel_FloodRisk = document.createElement('select');
-            sel_FloodRisk.multiple = true;
-            sel_FloodRisk.size = 5;
-            sel_FloodRisk.id = "sel_FloodRisk";
-            var FloodRisk_options_str = "<option value='' unselected></option>";
-            sel_FloodRisk.onchange = function(){filterFunc()};
-            FloodRisk_options_str  += '<option value="High">High</option>';
-            FloodRisk_options_str  += '<option value="Low">Low</option>';
-            FloodRisk_options_str  += '<option value="Moderate">Moderate</option>';
-            FloodRisk_options_str  += '<option value="Very High">Very High</option>';
-            FloodRisk_options_str  += '<option value="Very Low">Very Low</option>';
-            sel_FloodRisk.innerHTML = FloodRisk_options_str;
-            div_FloodRisk.appendChild(sel_FloodRisk);
-            var lab_FloodRisk = document.createElement('div');
-            lab_FloodRisk.innerHTML = 'Flood Risk';
-            lab_FloodRisk.className = 'filterlabel';
-            div_FloodRisk.appendChild(lab_FloodRisk);
-            var reset_FloodRisk = document.createElement('div');
-            reset_FloodRisk.innerHTML = 'clear filter';
-            reset_FloodRisk.className = 'filterlabel';
-            reset_FloodRisk.onclick = function() {
-                var options = document.getElementById("sel_FloodRisk").options;
-                for (var i=0; i < options.length; i++) {
-                    options[i].selected = false;
-                }
-                filterFunc();
-            };
-            div_FloodRisk.appendChild(reset_FloodRisk);
-            document.getElementById("menu").appendChild(
-                document.createElement("div"));
-            var div_CycloneRisk = document.createElement('div');
-            div_CycloneRisk.id = "div_CycloneRisk";
-            div_CycloneRisk.className= "filterselect";
-            document.getElementById("menu").appendChild(div_CycloneRisk);
-            sel_CycloneRisk = document.createElement('select');
-            sel_CycloneRisk.multiple = true;
-            sel_CycloneRisk.size = 5;
-            sel_CycloneRisk.id = "sel_CycloneRisk";
-            var CycloneRisk_options_str = "<option value='' unselected></option>";
-            sel_CycloneRisk.onchange = function(){filterFunc()};
-            CycloneRisk_options_str  += '<option value="High">High</option>';
-            CycloneRisk_options_str  += '<option value="Low">Low</option>';
-            CycloneRisk_options_str  += '<option value="Moderate">Moderate</option>';
-            CycloneRisk_options_str  += '<option value="Very High">Very High</option>';
-            CycloneRisk_options_str  += '<option value="Very Low">Very Low</option>';
-            sel_CycloneRisk.innerHTML = CycloneRisk_options_str;
-            div_CycloneRisk.appendChild(sel_CycloneRisk);
-            var lab_CycloneRisk = document.createElement('div');
-            lab_CycloneRisk.innerHTML = 'Cyclone Risk';
-            lab_CycloneRisk.className = 'filterlabel';
-            div_CycloneRisk.appendChild(lab_CycloneRisk);
-            var reset_CycloneRisk = document.createElement('div');
-            reset_CycloneRisk.innerHTML = 'clear filter';
-            reset_CycloneRisk.className = 'filterlabel';
-            reset_CycloneRisk.onclick = function() {
-                var options = document.getElementById("sel_CycloneRisk").options;
-                for (var i=0; i < options.length; i++) {
-                    options[i].selected = false;
-                }
-                filterFunc();
-            };
-            div_CycloneRisk.appendChild(reset_CycloneRisk);
-            document.getElementById("menu").appendChild(
-                document.createElement("div"));
-            var div_SalinityRisk = document.createElement('div');
-            div_SalinityRisk.id = "div_SalinityRisk";
-            div_SalinityRisk.className= "filterselect";
-            document.getElementById("menu").appendChild(div_SalinityRisk);
-            sel_SalinityRisk = document.createElement('select');
-            sel_SalinityRisk.multiple = true;
-            sel_SalinityRisk.size = 5;
-            sel_SalinityRisk.id = "sel_SalinityRisk";
-            var SalinityRisk_options_str = "<option value='' unselected></option>";
-            sel_SalinityRisk.onchange = function(){filterFunc()};
-            SalinityRisk_options_str  += '<option value="High">High</option>';
-            SalinityRisk_options_str  += '<option value="Low">Low</option>';
-            SalinityRisk_options_str  += '<option value="Moderate">Moderate</option>';
-            SalinityRisk_options_str  += '<option value="Very High">Very High</option>';
-            SalinityRisk_options_str  += '<option value="Very Low">Very Low</option>';
-            sel_SalinityRisk.innerHTML = SalinityRisk_options_str;
-            div_SalinityRisk.appendChild(sel_SalinityRisk);
-            var lab_SalinityRisk = document.createElement('div');
-            lab_SalinityRisk.innerHTML = 'Salinity Risk';
-            lab_SalinityRisk.className = 'filterlabel';
-            div_SalinityRisk.appendChild(lab_SalinityRisk);
-            var reset_SalinityRisk = document.createElement('div');
-            reset_SalinityRisk.innerHTML = 'clear filter';
-            reset_SalinityRisk.className = 'filterlabel';
-            reset_SalinityRisk.onclick = function() {
-                var options = document.getElementById("sel_SalinityRisk").options;
-                for (var i=0; i < options.length; i++) {
-                    options[i].selected = false;
-                }
-                filterFunc();
-            };
-            div_SalinityRisk.appendChild(reset_SalinityRisk);
-            document.getElementById("menu").appendChild(
-                document.createElement("div"));
-            var div_FlashFloodRisk = document.createElement('div');
-            div_FlashFloodRisk.id = "div_FlashFloodRisk";
-            div_FlashFloodRisk.className= "filterselect";
-            document.getElementById("menu").appendChild(div_FlashFloodRisk);
-            sel_FlashFloodRisk = document.createElement('select');
-            sel_FlashFloodRisk.multiple = true;
-            sel_FlashFloodRisk.size = 5;
-            sel_FlashFloodRisk.id = "sel_FlashFloodRisk";
-            var FlashFloodRisk_options_str = "<option value='' unselected></option>";
-            sel_FlashFloodRisk.onchange = function(){filterFunc()};
-            FlashFloodRisk_options_str  += '<option value="High">High</option>';
-            FlashFloodRisk_options_str  += '<option value="Low">Low</option>';
-            FlashFloodRisk_options_str  += '<option value="Moderate">Moderate</option>';
-            FlashFloodRisk_options_str  += '<option value="Very High">Very High</option>';
-            FlashFloodRisk_options_str  += '<option value="Very Low">Very Low</option>';
-            sel_FlashFloodRisk.innerHTML = FlashFloodRisk_options_str;
-            div_FlashFloodRisk.appendChild(sel_FlashFloodRisk);
-            var lab_FlashFloodRisk = document.createElement('div');
-            lab_FlashFloodRisk.innerHTML = 'Flash Flood Risk';
-            lab_FlashFloodRisk.className = 'filterlabel';
-            div_FlashFloodRisk.appendChild(lab_FlashFloodRisk);
-            var reset_FlashFloodRisk = document.createElement('div');
-            reset_FlashFloodRisk.innerHTML = 'clear filter';
-            reset_FlashFloodRisk.className = 'filterlabel';
-            reset_FlashFloodRisk.onclick = function() {
-                var options = document.getElementById("sel_FlashFloodRisk").options;
-                for (var i=0; i < options.length; i++) {
-                    options[i].selected = false;
-                }
-                filterFunc();
-            };
-            div_FlashFloodRisk.appendChild(reset_FlashFloodRisk);
-            document.getElementById("menu").appendChild(
-                document.createElement("div"));
-            var div_ErosionRisk = document.createElement('div');
-            div_ErosionRisk.id = "div_ErosionRisk";
-            div_ErosionRisk.className= "filterselect";
-            document.getElementById("menu").appendChild(div_ErosionRisk);
-            sel_ErosionRisk = document.createElement('select');
-            sel_ErosionRisk.multiple = true;
-            sel_ErosionRisk.size = 5;
-            sel_ErosionRisk.id = "sel_ErosionRisk";
-            var ErosionRisk_options_str = "<option value='' unselected></option>";
-            sel_ErosionRisk.onchange = function(){filterFunc()};
-            ErosionRisk_options_str  += '<option value="High">High</option>';
-            ErosionRisk_options_str  += '<option value="Low">Low</option>';
-            ErosionRisk_options_str  += '<option value="Moderate">Moderate</option>';
-            ErosionRisk_options_str  += '<option value="Very High">Very High</option>';
-            ErosionRisk_options_str  += '<option value="Very Low">Very Low</option>';
-            sel_ErosionRisk.innerHTML = ErosionRisk_options_str;
-            div_ErosionRisk.appendChild(sel_ErosionRisk);
-            var lab_ErosionRisk = document.createElement('div');
-            lab_ErosionRisk.innerHTML = 'Erosion Risk';
-            lab_ErosionRisk.className = 'filterlabel';
-            div_ErosionRisk.appendChild(lab_ErosionRisk);
-            var reset_ErosionRisk = document.createElement('div');
-            reset_ErosionRisk.innerHTML = 'clear filter';
-            reset_ErosionRisk.className = 'filterlabel';
-            reset_ErosionRisk.onclick = function() {
-                var options = document.getElementById("sel_ErosionRisk").options;
-                for (var i=0; i < options.length; i++) {
-                    options[i].selected = false;
-                }
-                filterFunc();
-            };
-            div_ErosionRisk.appendChild(reset_ErosionRisk);
-            document.getElementById("menu").appendChild(
-                document.createElement("div"));
-            var div_LandslideRisk = document.createElement('div');
-            div_LandslideRisk.id = "div_LandslideRisk";
-            div_LandslideRisk.className= "filterselect";
-            document.getElementById("menu").appendChild(div_LandslideRisk);
-            sel_LandslideRisk = document.createElement('select');
-            sel_LandslideRisk.multiple = true;
-            sel_LandslideRisk.size = 5;
-            sel_LandslideRisk.id = "sel_LandslideRisk";
-            var LandslideRisk_options_str = "<option value='' unselected></option>";
-            sel_LandslideRisk.onchange = function(){filterFunc()};
-            LandslideRisk_options_str  += '<option value="High">High</option>';
-            LandslideRisk_options_str  += '<option value="Low">Low</option>';
-            LandslideRisk_options_str  += '<option value="Moderate">Moderate</option>';
-            LandslideRisk_options_str  += '<option value="Very High">Very High</option>';
-            LandslideRisk_options_str  += '<option value="Very Low">Very Low</option>';
-            sel_LandslideRisk.innerHTML = LandslideRisk_options_str;
-            div_LandslideRisk.appendChild(sel_LandslideRisk);
-            var lab_LandslideRisk = document.createElement('div');
-            lab_LandslideRisk.innerHTML = 'Landslide Risk';
-            lab_LandslideRisk.className = 'filterlabel';
-            div_LandslideRisk.appendChild(lab_LandslideRisk);
-            var reset_LandslideRisk = document.createElement('div');
-            reset_LandslideRisk.innerHTML = 'clear filter';
-            reset_LandslideRisk.className = 'filterlabel';
-            reset_LandslideRisk.onclick = function() {
-                var options = document.getElementById("sel_LandslideRisk").options;
-                for (var i=0; i < options.length; i++) {
-                    options[i].selected = false;
-                }
-                filterFunc();
-            };
-            div_LandslideRisk.appendChild(reset_LandslideRisk);
-            document.getElementById("menu").appendChild(
-                document.createElement("div"));
-            var div_EarthquakeRisk = document.createElement('div');
-            div_EarthquakeRisk.id = "div_EarthquakeRisk";
-            div_EarthquakeRisk.className= "filterselect";
-            document.getElementById("menu").appendChild(div_EarthquakeRisk);
-            sel_EarthquakeRisk = document.createElement('select');
-            sel_EarthquakeRisk.multiple = true;
-            sel_EarthquakeRisk.size = 5;
-            sel_EarthquakeRisk.id = "sel_EarthquakeRisk";
-            var EarthquakeRisk_options_str = "<option value='' unselected></option>";
-            sel_EarthquakeRisk.onchange = function(){filterFunc()};
-            EarthquakeRisk_options_str  += '<option value="High">High</option>';
-            EarthquakeRisk_options_str  += '<option value="Low">Low</option>';
-            EarthquakeRisk_options_str  += '<option value="Moderate">Moderate</option>';
-            EarthquakeRisk_options_str  += '<option value="Very High">Very High</option>';
-            EarthquakeRisk_options_str  += '<option value="Very Low">Very Low</option>';
-            sel_EarthquakeRisk.innerHTML = EarthquakeRisk_options_str;
-            div_EarthquakeRisk.appendChild(sel_EarthquakeRisk);
-            var lab_EarthquakeRisk = document.createElement('div');
-            lab_EarthquakeRisk.innerHTML = 'Earthquake Risk';
-            lab_EarthquakeRisk.className = 'filterlabel';
-            div_EarthquakeRisk.appendChild(lab_EarthquakeRisk);
-            var reset_EarthquakeRisk = document.createElement('div');
-            reset_EarthquakeRisk.innerHTML = 'clear filter';
-            reset_EarthquakeRisk.className = 'filterlabel';
-            reset_EarthquakeRisk.onclick = function() {
-                var options = document.getElementById("sel_EarthquakeRisk").options;
-                for (var i=0; i < options.length; i++) {
-                    options[i].selected = false;
-                }
-                filterFunc();
-            };
-            div_EarthquakeRisk.appendChild(reset_EarthquakeRisk);
-            document.getElementById("menu").appendChild(
-                document.createElement("div"));
-            var div_SeaLevelRiseRisk = document.createElement('div');
-            div_SeaLevelRiseRisk.id = "div_SeaLevelRiseRisk";
-            div_SeaLevelRiseRisk.className= "filterselect";
-            document.getElementById("menu").appendChild(div_SeaLevelRiseRisk);
-            sel_SeaLevelRiseRisk = document.createElement('select');
-            sel_SeaLevelRiseRisk.multiple = true;
-            sel_SeaLevelRiseRisk.size = 5;
-            sel_SeaLevelRiseRisk.id = "sel_SeaLevelRiseRisk";
-            var SeaLevelRiseRisk_options_str = "<option value='' unselected></option>";
-            sel_SeaLevelRiseRisk.onchange = function(){filterFunc()};
-            SeaLevelRiseRisk_options_str  += '<option value="High">High</option>';
-            SeaLevelRiseRisk_options_str  += '<option value="Low">Low</option>';
-            SeaLevelRiseRisk_options_str  += '<option value="Moderate">Moderate</option>';
-            SeaLevelRiseRisk_options_str  += '<option value="Very High">Very High</option>';
-            SeaLevelRiseRisk_options_str  += '<option value="Very Low">Very Low</option>';
-            sel_SeaLevelRiseRisk.innerHTML = SeaLevelRiseRisk_options_str;
-            div_SeaLevelRiseRisk.appendChild(sel_SeaLevelRiseRisk);
-            var lab_SeaLevelRiseRisk = document.createElement('div');
-            lab_SeaLevelRiseRisk.innerHTML = 'Sea Level Rise Risk';
-            lab_SeaLevelRiseRisk.className = 'filterlabel';
-            div_SeaLevelRiseRisk.appendChild(lab_SeaLevelRiseRisk);
-            var reset_SeaLevelRiseRisk = document.createElement('div');
-            reset_SeaLevelRiseRisk.innerHTML = 'clear filter';
-            reset_SeaLevelRiseRisk.className = 'filterlabel';
-            reset_SeaLevelRiseRisk.onclick = function() {
-                var options = document.getElementById("sel_SeaLevelRiseRisk").options;
-                for (var i=0; i < options.length; i++) {
-                    options[i].selected = false;
-                }
-                filterFunc();
-            };
-            div_SeaLevelRiseRisk.appendChild(reset_SeaLevelRiseRisk);
         </script>
     </body>
 </html>
